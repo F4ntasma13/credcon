@@ -1,34 +1,34 @@
+// Importa os hooks e componentes necessários do React e do Next.js.
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useAuthContext } from 'src/contexts/auth-context';
 
+// Cria um componente chamado 'AuthGuard' para proteger rotas autenticadas.
 export const AuthGuard = (props) => {
-  const { children } = props;
-  const router = useRouter();
-  const { isAuthenticated } = useAuthContext();
-  const ignore = useRef(false);
-  const [checked, setChecked] = useState(false);
+  const { children } = props; // Extrai as propriedades passadas, especialmente 'children'.
+  const router = useRouter(); // Obtém o objeto de roteamento do Next.js.
+  const { isAuthenticated } = useAuthContext(); // Obtém o estado de autenticação do contexto.
+  const ignore = useRef(false); // Utiliza um ref para controlar chamadas múltiplas.
+  const [checked, setChecked] = useState(false); // Utiliza estado local para controle.
 
-  // Only do authentication check on component mount.
-  // This flow allows you to manually redirect the user after sign-out, otherwise this will be
-  // triggered and will automatically redirect to sign-in page.
-
+  // Realiza a verificação de autenticação somente quando o componente é montado.
   useEffect(
     () => {
       if (!router.isReady) {
-        return;
+        return; // Se o roteamento não estiver pronto, não faz nada.
       }
 
-      // Prevent from calling twice in development mode with React.StrictMode enabled
+      // Evita chamar duas vezes em modo de desenvolvimento com React.StrictMode habilitado.
       if (ignore.current) {
         return;
       }
 
-      ignore.current = true;
+      ignore.current = true; // Marca que a verificação foi realizada.
 
+      // Se o usuário não estiver autenticado, redireciona para a página de login.
       if (!isAuthenticated) {
-        console.log('Not authenticated, redirecting');
+        console.log('Não autenticado, redirecionando');
         router
           .replace({
             pathname: '/auth/login',
@@ -36,22 +36,24 @@ export const AuthGuard = (props) => {
           })
           .catch(console.error);
       } else {
-        setChecked(true);
+        setChecked(true); // Marca que a verificação foi concluída com sucesso.
       }
     },
     [router.isReady]
   );
 
+  // Se 'checked' for falso, não renderiza nada.
   if (!checked) {
     return null;
   }
 
-  // If got here, it means that the redirect did not occur, and that tells us that the user is
-  // authenticated / authorized.
+  // Se chegou aqui, significa que o redirecionamento não ocorreu e o usuário está autenticado/autorizado.
 
-  return children;
+  return children; // Renderiza os componentes filhos (rotas protegidas).
 };
 
+// Define as propriedades esperadas para o 'AuthGuard'.
 AuthGuard.propTypes = {
   children: PropTypes.node
 };
+
