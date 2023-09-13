@@ -11,7 +11,7 @@ import { OverviewTotalProfit } from 'src/sections/overview/overview-total-profit
 import { OverviewTraffic } from 'src/sections/overview/overview-traffic';
 import { now } from '.';
 
-//antigo page.js pra lembrar depois sobre esse codigo que mudei no git para o vercel abrir
+
 export const Page = () => (
   <>
     <Head>
